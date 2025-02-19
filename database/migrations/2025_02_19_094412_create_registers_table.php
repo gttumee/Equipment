@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('registers', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('user_id');
+            $table->date('regiter_date'); 
             $table->timestamps();
         });
     }

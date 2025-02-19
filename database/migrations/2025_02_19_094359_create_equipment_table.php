@@ -13,7 +13,15 @@ return new class extends Migration
     {
         Schema::create('equipment', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('category_id');  // 'catergory_id' は誤字のため 'category_id' に修正
+            $table->string('name');
+            $table->decimal('price', 10, 2);  // 'price' は数値なので decimal 型に変更（10桁の整数部、2桁の小数部）
+            $table->date('buy_date');  // 日付なので date 型に変更
+            $table->string('status');  // 'status' は1回のみ記述
+            $table->string('user_id');
+
+            $table->decimal('percentage', 5, 2);  // 'percentage' はパーセンテージなので decimal 型（5桁の整数部、2桁の小数部）
+            $table->timestamps();            
         });
     }
 
