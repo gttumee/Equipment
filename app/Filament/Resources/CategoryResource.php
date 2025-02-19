@@ -6,9 +6,13 @@ use App\Filament\Resources\CategoryResource\Pages;
 use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -16,14 +20,31 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
+    protected static ?string $navigationGroup = 'Бүртгэл';
+    protected static ?string $pluralModelLabel = 'Бүртэлийн төрөл нэмэх';
+    protected static bool $hasTitleCaseModelLabel = false;
+    protected static ?string $navigationLabel = 'Бүртэлийн төрөл нэмэх';
+    protected static ?string $navigationIcon = 'heroicon-s-bars-arrow-up';
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) static::$model::where('status', '1')->count();
+    }
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name')
+                ->label('Төрөлийн нэр'),
+                Select::make('status')
+                ->label('Статус')
+                ->options([
+                    1 => 'Идэхтэй',
+                    2 => 'Идэвхгүй',
+                ])
+                ->default(1)
+                ->nullable(),
             ]);
     }
 
@@ -31,7 +52,19 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('name')
+                ->label('Нэр'),
+                BadgeColumn::make('status')
+                ->label('Статус')
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    1 => 'Идэвхтэй', 
+                    2 => 'Идэвхтгүй', 
+                })
+                ->colors([
+                    'success' => 1,
+                    'primary' => 2,
+                ])
+
             ])
             ->filters([
                 //
@@ -41,8 +74,9 @@ class CategoryResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteBulkAction::make()
+                ->label('Бүгдийг устгах'),
+                ]) ->label('Бүгдийг устгах'),
             ]);
     }
 

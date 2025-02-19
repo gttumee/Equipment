@@ -16,8 +16,15 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class RegisterResource extends Resource
 {
     protected static ?string $model = Register::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Бүртгэл';
+    protected static ?string $pluralModelLabel = 'Бүртгэл хийх';
+    protected static bool $hasTitleCaseModelLabel = false;
+    protected static ?string $navigationLabel = 'Бүртгэл хийх';
+    protected static ?string $navigationIcon = 'heroicon-m-arrow-up-on-square-stack';
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) static::$model::where('status', '1')->count();
+    }
 
     public static function form(Form $form): Form
     {

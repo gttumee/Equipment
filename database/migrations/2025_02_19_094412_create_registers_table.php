@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('user_id');
-            $table->date('regiter_date'); 
+            $table->integer('status')->default(1)->nullable(); 
+            $table->date('regiter_date')->nullable(); 
             $table->timestamps();
         });
     }
