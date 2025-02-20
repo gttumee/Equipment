@@ -17,8 +17,10 @@ use Filament\Tables;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Repeater;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Infolist;
+
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class EquipmentResource extends Resource
@@ -126,6 +128,7 @@ class EquipmentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -133,6 +136,7 @@ class EquipmentResource extends Resource
                 ]),
             ]);
     }
+    
 
     public static function getRelations(): array
     {
@@ -141,12 +145,26 @@ class EquipmentResource extends Resource
         ];
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+{
+    return $infolist
+        ->schema([
+            TextEntry::make('category.name'),
+            TextEntry::make('name'),
+            TextEntry::make('price'),
+            TextEntry::make('location'),
+            TextEntry::make('relates.name'),
+
+        ]);
+}
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListEquipment::route('/'),
             'create' => Pages\CreateEquipment::route('/create'),
             'edit' => Pages\EditEquipment::route('/{record}/edit'),
+            'view' => Pages\ViewEquipment::route('/{record}'),
         ];
     }
 }
