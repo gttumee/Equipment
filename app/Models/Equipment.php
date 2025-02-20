@@ -7,11 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Equipment extends Model
 {
     protected $fillable = [
+        'category_id',
         'name',
-        'email',
+        'price',
+        'buy_date',
+        'status',
         'password',
+        'user_id',
+        'percentage',
+        'location',
+        'owner',
     ];
-
+    
     public function category()
     {
         return $this->belongsTo(category::class);
@@ -26,6 +33,11 @@ class Equipment extends Model
     {
         return $this->belongsTo(user::class);
     }
+
+    public function relate()
+{
+    return $this->hasMany(Relate::class);
+}
 
 
 }

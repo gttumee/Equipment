@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('category_id');  
             $table->string('name');
+            $table->string('owner')->nullable();  
+            $table->string('location')->nullable();  
             $table->decimal('price', 10, 2)->nullable();  
             $table->date('buy_date')->nullable(); 
             $table->integer('status')->default(1)->nullable(); 
