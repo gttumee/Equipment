@@ -89,6 +89,8 @@ class EquipmentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->heading('Хөрөнгийн жагсаалт')
+            ->paginated([5,10,20,50,100, 'all'])
             ->columns([
                 TextColumn::make('category.name')
                 ->label('Төрөл'),
