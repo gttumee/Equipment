@@ -82,7 +82,7 @@ class EquipmentResource extends Resource
                     TextInput::make('serial_number')
                         ->label('Аралын дугаар')
                         ->nullable()
-                ])->columns(2)->collapsed()
+                ])->columns(2)
             ]);
     }
 
