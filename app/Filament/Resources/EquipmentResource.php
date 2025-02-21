@@ -73,6 +73,7 @@ class EquipmentResource extends Resource
                 Hidden::make('user_id')
                 ->default(auth()->id()),
                 Repeater::make('relate')
+                ->relationship('relate')
                 ->label('Дагалдах хэрэгсэл')
                 ->schema([
                     TextInput::make('name')
@@ -153,7 +154,7 @@ class EquipmentResource extends Resource
             TextEntry::make('name'),
             TextEntry::make('price'),
             TextEntry::make('location'),
-            TextEntry::make('relates.name'),
+            TextEntry::make('relate.name'),
 
         ]);
 }
