@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Equipment extends Model
@@ -17,16 +18,27 @@ class Equipment extends Model
         'percentage',
         'location',
         'owner',
+        'code',
     ];
     
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($equipment) {
+            $created_at = Carbon::parse($equipment->created_at);
+            $code = $created_at->format('ymdHis');  // Format: YYMMDDHHMMSS
+            $equipment->code = $code ;
+        });
+    }
     public function category()
     {
         return $this->belongsTo(category::class);
     }
 
-    public function register()
+    public function registers()
     {
-        return $this->belongsTo(register::class);
+    return $this->hasMany(Register::class, 'equipment_id'); 
     }
 
     public function user()

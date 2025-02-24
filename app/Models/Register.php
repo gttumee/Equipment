@@ -7,14 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class Register extends Model
 {
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'user_id',
+        'equipment_id',
+        'status',
+        'register_date',
+        'reason'
     ];
-
-    public function equiment()
+      
+    public function equipment()
     {
-        return $this->hasMany(Equipment::class);
+        return $this->belongsTo(Equipment::class); 
     }
 
     public function user()

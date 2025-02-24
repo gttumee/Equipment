@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\EquipmentResource\Pages;
-use App\Filament\Resources\EquipmentResource\RelationManagers;
 use App\Models\Category;
 use App\Models\Equipment;
 use Filament\Forms;
@@ -17,11 +16,12 @@ use Filament\Tables;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
-
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Support\Enums\Alignment;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class EquipmentResource extends Resource
 {
@@ -41,101 +41,144 @@ class EquipmentResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('category_id')
+                Section::make('Бүртгэх')
+                ->description('Хөрөнгийн үндсэн мэдээлэл бүртгэх')
+                ->schema([
+            Select::make('category_id')
                 ->label('Төрлийн нэр')
                 ->options(Category::all()->pluck('name', 'id')) 
                 ->searchable()
                 ->required(), 
-                TextInput::make('name')
-                ->label('Хөрөнгө нэр'),
-                TextInput::make('price')
-                ->label('Үнэ')
-                ->numeric()
-                ->inputMode('decimal'),
-                DatePicker::make('buy_date')
-                ->label('Худалдаж авсан огноо'),
-                Select::make('status')
-                ->label('Статус')
-                ->options([
-                    1 => 'Идэхтэй',
-                    2 => 'Идэвхгүй',
-                ])
-                ->default(1)
-                ->nullable(),
-                TextInput::make('location')
-                ->label('Байршил'),
-                TextInput::make('percentage')
+            TextInput::make('name')
+                ->label('Хөрөнгийн нэр'),
+            TextInput::make('percentage')
                 ->label('Тоо ширхэг')
                 ->numeric()
                 ->inputMode('decimal'),
-                TextInput::make('owner')
+            TextInput::make('price')
+                ->label('Үнэ')
+                ->numeric()
+                ->inputMode('decimal'),
+            TextInput::make('location')
+                ->label('Байршил'),
+            TextInput::make('owner')
                 ->label('Эзэмшигч'),
-                Hidden::make('user_id')
-                ->default(auth()->id()),
-                Repeater::make('relate')
-                ->relationship('relate')
-                ->label('Дагалдах хэрэгсэл')
+            DatePicker::make('buy_date')
+                ->label('Худалдаж авсан огноо'),
+            Hidden::make('user_id')
+                ->default(auth()->id())
+                ])
+                
+                ->columns(2),
+            Section::make('Нэмэлт бүртгэл')
+                ->description('Дагалдах хэрэгсэлийн бүртгэл')
                 ->schema([
-                    TextInput::make('name')
-                        ->label('Нэр')
-                        ->nullable(),
-                    TextInput::make('serial_number')
-                        ->label('Аралын дугаар')
-                        ->nullable()
-                ])->columns(2)
-            ]);
+                    Repeater::make('relate')
+                        ->relationship('relate')
+                        ->label('Дагалдах хэрэгсэл нэмэх')
+                        ->schema([
+                            TextInput::make('name')
+                                ->label('Нэр')
+                                ->nullable(),
+                            TextInput::make('serial_number')
+                                ->label('Тоо ширхэг')
+                                ->nullable()
+                                ->default('1')
+                        ])->columns(2)
+                        ->defaultItems(0)
+                        ->addAction(fn (Forms\Components\Actions\Action $action) => $action
+                        ->icon('heroicon-c-plus-circle')
+                        ->label('Нэмэлтээр оруулах'))
+                        ]),
+        ]);
+          
     }
 
     public static function table(Table $table): Table
     {
+
         return $table
             ->heading('Хөрөнгийн жагсаалт')
-            ->paginated([5,10,20,50,100, 'all'])
+            ->paginated([5, 10, 20, 50, 100, 'all'])
             ->columns([
                 TextColumn::make('category.name')
-                ->label('Төрөл'),
+                    ->label('Төрөл')
+                    ->sortable(),
                 TextColumn::make('name')
-                ->label('Нэр'),
+                    ->label('Нэр')
+                    ->wrap()
+                    ->sortable(),
                 TextColumn::make('owner')
-                ->label('Эзэмшигч'),
-                TextColumn::make('price')
-                ->label('Үнэ')
-                ->money(),
-                TextColumn::make('percentage')
-                ->label('Тоо'),
-                TextColumn::make('location')
-                ->label('Байршил'),
+                    ->label('Эзэмшигч')
+                    ->sortable(),
                 TextColumn::make('buy_date')
-                ->label('Огноо'),
-                TextColumn::make('buy_date')
-                ->label('Худлдаж авсан огноо'),
-                TextColumn::make('owner')
-                ->label('Эзэмшигч'),
+                    ->label('Огноо')
+                    ->sortable(),
                 BadgeColumn::make('status')
-                ->label('Статус')
-                ->formatStateUsing(fn ($state) => match ($state) {
-                    1 => 'Идэвхтэй', 
-                    2 => 'Идэвхтгүй', 
-                })
-                ->colors([
-                    'success' => 1,
-                    'primary' => 2,
-                ]),
+                    ->label('Статус')
+                    ->sortable()
+                    ->formatStateUsing(function ($state, $record) {
+                    $register = $record->registers()->latest()->first();
+                    if ($register) {
+                    return match ($register->status) {
+                         1 => 'Бүртгэгдсэн',  
+                         2 => 'Тоологдсон',
+                         3 => 'Зарсагдсан', 
+                         4 => 'Эвдэрсэн',
+                         5 => 'Хугацаа дууссан', 
+                    default => 'Бүртгэгдсэн',
+            };
+        }
+                return 'Бүртгэгдсэн';
+    })
+                     ->colors([
+                      'success' => 1,
+                       'primary' => 2,
+                       'info' => 3, 
+                       'danger' => 4,
+                       'gray' => 5,
+    ])
+    ->color(function ($state, $record) {
+        $register = $record->registers()->latest()->first();
+        if ($register) {
+            return match ($register->status) {
+                1 => 'success',
+                2 => 'primary', 
+                3 => 'info',
+                4 => 'danger',
+                5 => 'gray',
+                default => 'success',
+            };
+        }
+        return 'success';
+    }),
                 TextColumn::make('user.name')
-                ->label('Бүртгэгч'),
+                    ->label('Бүртгэгч')
+                    ->sortable(),
                 TextColumn::make('created_at')
-                ->label('Бүртгэcэн'),
-            ])
+                    ->label('Бүртгэcэн')
+                    ->sortable(),
+                ])
+        
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\Action::make('Qrcode')
+                ->modalContent(function (Equipment $record){
+                    $url = route('equipment.show', $record->id); 
+                     $qrCode = QrCode::size(300)->generate($url); 
+                     return view('qrcode',['qrCode' => $qrCode,'code' => $record->code,]);
+                    } )
+                    ->modalAlignment(Alignment::Center)
+                    ->icon('heroicon-m-qr-code')
+                    ->modalWidth('md')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -152,11 +195,24 @@ class EquipmentResource extends Resource
 {
     return $infolist
         ->schema([
-            TextEntry::make('category.name'),
-            TextEntry::make('name'),
-            TextEntry::make('price'),
+            TextEntry::make('category.name')
+            ->label('Төрөл'),
+            TextEntry::make('name')
+            ->label('Нэр'),
+            TextEntry::make('price')
+            ->label('Анхны үнэ'),
             TextEntry::make('location'),
-            TextEntry::make('relate.name'),
+            TextEntry::make('relate.name')
+            ->label('Дагалдах')
+            ->listWithLineBreaks()
+            ->bulleted(),
+            TextEntry::make('code')
+            ->label('код'),
+            TextEntry::make('registers.reason')
+            ->label('Шалтгаан')
+            ->listWithLineBreaks()
+            ->bulleted(),
+
 
         ]);
 }

@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('registers', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
             $table->string('user_id');
+            $table->foreignId('equipment_id')->constrained(); 
             $table->integer('status')->default(1)->nullable(); 
-            $table->date('regiter_date')->nullable(); 
+            $table->date('register_date')->nullable(); 
+            $table->text('reason')->nullable(); 
             $table->timestamps();
         });
     }
