@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('equipment_id')->constrained('equipment')->onDelete('cascade'); 
             $table->string('name');  
-            $table->string('serial_number')->nullable();
+            $table->string('pieces')->nullable();
             $table->timestamps();
         });
     }

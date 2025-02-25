@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\EquipmentResource\Pages;
 use App\Models\Category;
 use App\Models\Equipment;
+use Dompdf\Css\Color;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -17,11 +18,13 @@ use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
+use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Support\Enums\Alignment;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Filament\Infolists\Components\Section as infosection;
 
 class EquipmentResource extends Resource
 {
@@ -192,31 +195,56 @@ class EquipmentResource extends Resource
     }
 
     public static function infolist(Infolist $infolist): Infolist
-{
-    return $infolist
-        ->schema([
-            TextEntry::make('category.name')
-            ->label('Төрөл'),
-            TextEntry::make('name')
-            ->label('Нэр'),
-            TextEntry::make('price')
-            ->label('Анхны үнэ'),
-            TextEntry::make('location'),
-            TextEntry::make('relate.name')
-            ->label('Дагалдах')
-            ->listWithLineBreaks()
-            ->bulleted(),
-            TextEntry::make('code')
-            ->label('код'),
-            TextEntry::make('registers.reason')
-            ->label('Шалтгаан')
-            ->listWithLineBreaks()
-            ->bulleted(),
-
-
-        ]);
-}
-
+    {
+        return $infolist
+            ->schema([
+                infosection::make()
+                ->heading('Үндсэн мэдээлэл')
+                ->schema([
+                    Grid::make(4)
+                    ->schema([  
+                    TextEntry::make('category.name')
+                    ->label('Төрөл'),
+                    TextEntry::make('name')
+                    ->label('Нэр'),
+                    TextEntry::make('price')
+                    ->label('Анхны үнэ'),
+                    TextEntry::make('location')
+                    ->label('Байршил'),
+                    ])
+                  
+                ]),
+    
+                infosection::make()
+                ->heading('Дагалдах хэрэгсэлийн мэдээлэл')
+                ->schema([
+                    Grid::make(2)
+                    ->schema([ 
+                        TextEntry::make('relate.name')
+                        ->label('Дагалдах хэрэгсэлийн нэр'),
+                        TextEntry::make('relate.serial_number')
+                        ->label('Тоо хэмжээ'),
+                        ])
+                ]),
+    
+                infosection::make()
+                ->heading('Хасалт шалтгаан')
+                ->schema([
+                    Grid::make(2)
+                    ->schema([ 
+                        TextEntry::make('registers.reason')
+                        ->label('Хасалт хийсэн шалтгаан'),
+                        TextEntry::make('user.name')
+                        ->badge()
+                        ->label('Хасалт хийсэн ажилтан'),
+                        TextEntry::make('registers.created_at')
+                        ->label('Тоо хэмжээ'),
+                        ])
+                ])
+    
+            ]);
+    }
+    
     public static function getPages(): array
     {
         return [
