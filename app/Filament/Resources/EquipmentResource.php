@@ -167,9 +167,8 @@ class EquipmentResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\Action::make('Qrcode')
+                ->label('QR код')
                 ->modalContent(function (Equipment $record){
                     $url = route('equipment.show', $record->id); 
                      $qrCode = QrCode::size(300)->generate($url); 
