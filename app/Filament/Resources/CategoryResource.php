@@ -26,6 +26,7 @@ class CategoryResource extends Resource
     protected static ?string $navigationLabel = 'Бүртэлийн төрөл нэмэх';
     protected static ?string $navigationIcon = 'heroicon-s-bars-arrow-up';
     public static function getNavigationBadge(): ?string
+    
     {
         return (string) static::$model::where('status', '1')->count();
     }

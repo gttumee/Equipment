@@ -83,7 +83,7 @@ class EquipmentResource extends Resource
                             TextInput::make('name')
                                 ->label('Нэр')
                                 ->nullable(),
-                            TextInput::make('serial_number')
+                            TextInput::make('pieces')
                                 ->label('Тоо ширхэг')
                                 ->nullable()
                                 ->default('1')
