@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('equipment_id')->constrained('equipment')->onDelete('cascade'); 
             $table->string('name');  
             $table->string('pieces')->nullable();
+            $table->string('price')->nullable();
             $table->timestamps();
         });
     }

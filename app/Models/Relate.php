@@ -9,7 +9,8 @@ class Relate extends Model
     protected $fillable = [
         'equipment_id',
         'name',
-        'serial_number',
+        'price',
+        'pieces',
     ];
 
     public function equipment()

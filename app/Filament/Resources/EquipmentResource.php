@@ -68,6 +68,8 @@ class EquipmentResource extends Resource
                 ->label('Эзэмшигч'),
             DatePicker::make('buy_date')
                 ->label('Худалдаж авсан огноо'),
+            DatePicker::make('end_date')
+                ->label('Дуусах хугацаа'),
             Hidden::make('user_id')
                 ->default(auth()->id())
                 ])
@@ -86,8 +88,11 @@ class EquipmentResource extends Resource
                             TextInput::make('pieces')
                                 ->label('Тоо ширхэг')
                                 ->nullable()
-                                ->default('1')
-                        ])->columns(2)
+                                ->default('1'),
+                            TextInput::make('price')
+                                ->label('Үнэ')
+                                ->nullable()
+                        ])->columns(3)
                         ->defaultItems(0)
                         ->addAction(fn (Forms\Components\Actions\Action $action) => $action
                         ->icon('heroicon-c-plus-circle')
@@ -210,6 +215,10 @@ class EquipmentResource extends Resource
                     ->label('Анхны үнэ'),
                     TextEntry::make('location')
                     ->label('Байршил'),
+                    TextEntry::make('buy_date')
+                    ->label('Худалдаж авсан огноо'),
+                    TextEntry::make('end_date')
+                    ->label('Дуусах он огноо'),
                     ])
                   
                 ]),
@@ -217,12 +226,22 @@ class EquipmentResource extends Resource
                 infosection::make()
                 ->heading('Дагалдах хэрэгсэлийн мэдээлэл')
                 ->schema([
-                    Grid::make(2)
+                    Grid::make(5)
                     ->schema([ 
                         TextEntry::make('relate.name')
+                        ->listWithLineBreaks()
                         ->label('Дагалдах хэрэгсэлийн нэр'),
-                        TextEntry::make('relate.serial_number')
+                        TextEntry::make('relate.pieces')
+                        ->listWithLineBreaks()
                         ->label('Тоо хэмжээ'),
+                        TextEntry::make('relate.price')
+                        ->listWithLineBreaks()
+                        ->numeric()
+                        ->label('Үнэ'),
+                        TextEntry::make('relate.created_at')
+                        ->listWithLineBreaks()
+                        ->numeric()
+                        ->label('Хуалдаж авсан огноо'),
                         ])
                 ]),
     
