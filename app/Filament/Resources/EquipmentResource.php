@@ -47,11 +47,26 @@ class EquipmentResource extends Resource
                 Section::make('Бүртгэх')
                 ->description('Хөрөнгийн үндсэн мэдээлэл бүртгэх')
                 ->schema([
-            Select::make('category_id')
-                ->label('Төрлийн нэр')
-                ->options(Category::all()->pluck('name', 'id')) 
-                ->searchable()
-                ->required(), 
+                Select::make('category_id')
+                    ->label('Төрлийн нэр')
+                    ->options(Category::all()->mapWithKeys(function ($category) {
+                        return [$category->id => $category->name];
+                    }))
+                    ->relationship(name: 'category', titleAttribute: 'name') 
+                    ->createOptionForm([
+                TextInput::make('name')
+                    ->label('Төрөлийн нэр'),
+                Select::make('status')
+                    ->label('Статус')
+                    ->options([
+                        1 => 'Идэхтэй',
+                        2 => 'Идэвхгүй',
+                    ])
+                    ->default(1)
+                    ->nullable(),
+                    ])
+                    ->searchable()
+                    ->required(), 
             TextInput::make('name')
                 ->label('Хөрөнгийн нэр'),
             TextInput::make('percentage')
@@ -96,7 +111,7 @@ class EquipmentResource extends Resource
                         ->defaultItems(0)
                         ->addAction(fn (Forms\Components\Actions\Action $action) => $action
                         ->icon('heroicon-c-plus-circle')
-                        ->label('Нэмэлтээр оруулах'))
+                        ->label('Нэмэх'))
                         ]),
         ]);
           
@@ -215,6 +230,10 @@ class EquipmentResource extends Resource
                     ->label('Анхны үнэ'),
                     TextEntry::make('location')
                     ->label('Байршил'),
+                    TextEntry::make('owner')
+                    ->label('Эзэмшигч'),
+                    TextEntry::make('percentage')
+                    ->label('Тоо ширхэг'),
                     TextEntry::make('buy_date')
                     ->label('Худалдаж авсан огноо'),
                     TextEntry::make('end_date')
