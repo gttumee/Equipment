@@ -33,7 +33,7 @@ class Equipment extends Model
     }
     public function category()
     {
-        return $this->belongsTo(category::class);
+        return $this->belongsTo(Category::class);
     }
 
     public function registers()

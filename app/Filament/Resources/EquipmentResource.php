@@ -124,6 +124,9 @@ class EquipmentResource extends Resource
             ->heading('Хөрөнгийн жагсаалт')
             ->paginated([5, 10, 20, 50, 100, 'all'])
             ->columns([
+                TextColumn::make('code')
+                ->label('Код')
+                ->sortable(),
                 TextColumn::make('category.name')
                     ->label('Төрөл')
                     ->sortable(),
@@ -222,6 +225,9 @@ class EquipmentResource extends Resource
                 ->schema([
                     Grid::make(4)
                     ->schema([  
+                    TextEntry::make('code')
+                    ->label('Код')
+                    ->badge(),
                     TextEntry::make('category.name')
                     ->label('Төрөл'),
                     TextEntry::make('name')
