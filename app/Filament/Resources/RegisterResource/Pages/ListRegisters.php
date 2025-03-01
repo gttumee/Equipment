@@ -21,18 +21,10 @@ class ListRegisters extends ListRecords
                 ->label('QR кодоор бүртгэх')  // ボタンのラベル
                 ->color('primary')
                 ->icon('heroicon-m-qr-code')
-                ->modalHeading('QRコードをスキャン')  // モーダルの見出し
-                ->modalWidth('lg')
-                ->modalContent(fn () => view('qrcode-scan-modal'))  // モーダルのコンテンツ
-                // モーダルが開かれるときにイベントを発火
-                ->after(function () {
-                    // Livewireからイベントを発火させてカメラを初期化
-                    $this->dispatchBrowserEvent('modalOpened');
-                }),
+                ->url(route('qr-scanner')),  // URLを指定
         ];
     }
     
-
     public function getTabs(): array
     {
         return [
