@@ -18,14 +18,20 @@ class ListRegisters extends ListRecords
     {
         return [
             Action::make('edit')
-                ->label('QR кодоор бүртгэх')
+                ->label('QR кодоор бүртгэх')  // ボタンのラベル
                 ->color('primary')
                 ->icon('heroicon-m-qr-code')
-                ->modalHeading('QRコードをスキャン')
+                ->modalHeading('QRコードをスキャン')  // モーダルの見出し
                 ->modalWidth('lg')
-                ->modalContent(fn () => view('qrcode-scan-modal')),  // 修正
-            ];
+                ->modalContent(fn () => view('qrcode-scan-modal'))  // モーダルのコンテンツ
+                // モーダルが開かれるときにイベントを発火
+                ->after(function () {
+                    // Livewireからイベントを発火させてカメラを初期化
+                    $this->dispatchBrowserEvent('modalOpened');
+                }),
+        ];
     }
+    
 
     public function getTabs(): array
     {

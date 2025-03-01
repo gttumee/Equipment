@@ -1,26 +1,32 @@
-<div id="scanner-container" style="position: relative;">
-    <video id="qr-video" style="width: 100%; height: auto;" autoplay></video>
-    <canvas id="qr-canvas" style="display: none;"></canvas>
-    <button id="start-scan" class="btn btn-primary">QRコードをスキャン</button>
-</div>
+<div id="qr-reader" style="width: 100%; height: 400px; border: 1px solid #ccc;"></div>
+<div id="result" style="margin-top: 20px; font-size: 18px;"></div>
+
+<!-- HTML5 QRコードライブラリ -->
+<script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
 
 <script>
-    document.getElementById('start-scan').addEventListener('click', function() {
-        const videoElement = document.getElementById('qr-video');
-        const canvasElement = document.getElementById('qr-canvas');
-        const canvas = canvasElement.getContext('2d');
-        
-        // QR Scannerライブラリの初期化
-        const qrScanner = new QrScanner(videoElement, result => {
-            alert("QRコードが読み取られました: " + result);
-            qrScanner.stop();
-        });
+    // QRコード読み取り成功時のコールバック関数
+    function onScanSuccess(decodedText, decodedResult) {
+        document.getElementById('result').innerHTML = `<b>読み取った結果:</b> ${decodedText}`;
+    }
 
-        // カメラの起動
-        qrScanner.start().then(() => {
-            console.log("カメラが起動しました。QRコードのスキャンを開始できます。");
-        }).catch(e => {
-            console.error("カメラの起動に失敗しました: ", e);
-        });
+    // QRコード読み取りエラー時のコールバック関数
+    function onScanError(errorMessage) {
+        console.warn(`QR読み取りエラー: ${errorMessage}`);
+    }
+
+    // モーダル表示後にカメラを初期化する
+    window.addEventListener('openModal', function () {
+        const html5QrcodeScanner = new Html5QrcodeScanner(
+            "qr-reader", 
+            { 
+                fps: 10, 
+                qrbox: 250 
+            },
+            false
+        );
+
+        // QRコードスキャン開始
+        html5QrcodeScanner.render(onScanSuccess, onScanError);
     });
 </script>
