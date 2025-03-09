@@ -18,6 +18,12 @@ class ListEquipment extends ListRecords
         return [
             Actions\CreateAction::make()
             ->label('Шинээр бүртгэх'),
+            Actions\Action::make('download_qr_codes')
+            ->label('QR кодыг PDF-аар татаж авах')
+            ->action(function () {
+                // PDFを生成するルートへリダイレクト
+                return redirect()->route('generate.qrcodes.pdf');
+            })
         ];
     }
     
