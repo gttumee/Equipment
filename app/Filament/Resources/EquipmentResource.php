@@ -88,18 +88,14 @@ class EquipmentResource extends Resource
                 ->label('Худалдаж авсан огноо'),
             DatePicker::make('end_date')
                 ->label('Дуусах хугацаа'),
-            Select::make('status')
-                ->label('Status')
-                ->options(config('status'))
-                ->default('active')
-                ->required(),
+            Hidden::make('status')
+            ->default('active'),
             Hidden::make('user_id')
                 ->default(auth()->id())
                 ])
-                
                 ->columns(2),
             Section::make('Нэмэлт бүртгэл')
-                ->description('Дагалдах хэрэгсэлийн бүртгэл')
+                ->description('Дагалдах хэрэгсэл бүртгэл')
                 ->schema([
                     Repeater::make('relate')
                         ->relationship('relate')
@@ -149,7 +145,7 @@ class EquipmentResource extends Resource
                     ->label('Огноо')
                     ->sortable(),
                     Tables\Columns\BadgeColumn::make('status')
-                    ->label('Статус')
+                    ->label('Төлөв')
                     ->sortable()
                     ->getStateUsing(fn($record) => config('status')[$record->status] ?? $record->status),
                 TextColumn::make('user.name')
@@ -203,7 +199,7 @@ class EquipmentResource extends Resource
                     ->label('Код')
                     ->fontFamily(FontFamily::Mono),
                     TextEntry::make('status')
-                    ->label('Статус')
+                    ->label('Төлөв')
                     ->badge()
                     ->getStateUsing(fn($record) => config('status')[$record->status] ?? $record->status),
                     TextEntry::make('category.name')

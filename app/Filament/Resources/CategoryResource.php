@@ -39,7 +39,7 @@ class CategoryResource extends Resource
                 TextInput::make('name')
                 ->label('Төрөлийн нэр'),
                 Select::make('status')
-                ->label('Статус')
+                ->label('Төлөв')
                 ->options([
                     1 => 'Идэхтэй',
                     2 => 'Идэвхгүй',
@@ -56,7 +56,7 @@ class CategoryResource extends Resource
                 TextColumn::make('name')
                 ->label('Нэр'),
                 BadgeColumn::make('status')
-                ->label('Статус')
+                ->label('Төлөв')
                 ->formatStateUsing(fn ($state) => match ($state) {
                     1 => 'Идэвхтэй', 
                     2 => 'Идэвхтгүй', 
