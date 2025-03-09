@@ -49,10 +49,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Equipment::class);
     }
-
-    public function register()
-    {
-        return $this->hasMany(register::class);
-    }
-
 }

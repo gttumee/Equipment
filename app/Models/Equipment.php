@@ -12,6 +12,7 @@ class Equipment extends Model
         'name',
         'price',
         'buy_date',
+        'end_date',
         'status',
         'password',
         'user_id',
@@ -36,11 +37,6 @@ class Equipment extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function registers()
-    {
-    return $this->hasMany(Register::class, 'equipment_id'); 
-    }
-
     public function user()
     {
         return $this->belongsTo(user::class);
@@ -49,6 +45,11 @@ class Equipment extends Model
     public function relate()
 {
     return $this->hasMany(Relate::class);
+}
+
+public function reason()
+{
+    return $this->hasOne(Reason::class);
 }
 
 

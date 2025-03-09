@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\EquipmentResource\Pages;
 use App\Models\Category;
 use App\Models\Equipment;
+use App\Models\Reason;
 use Dompdf\Css\Color;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -25,6 +26,8 @@ use Filament\Infolists\Infolist;
 use Filament\Support\Enums\Alignment;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Filament\Infolists\Components\Section as infosection;
+use Filament\Support\Enums\FontFamily;
+use Illuminate\Container\Attributes\DB;
 
 class EquipmentResource extends Resource
 {
@@ -37,7 +40,7 @@ class EquipmentResource extends Resource
     
     public static function getNavigationBadge(): ?string
     {
-        return (string) static::$model::where('status', '1')->count();
+        return (string) static::$model::where('status', 'active')->count();
     }
 
     public static function form(Form $form): Form
@@ -85,6 +88,11 @@ class EquipmentResource extends Resource
                 ->label('Худалдаж авсан огноо'),
             DatePicker::make('end_date')
                 ->label('Дуусах хугацаа'),
+            Select::make('status')
+                ->label('Status')
+                ->options(config('status'))
+                ->default('active')
+                ->required(),
             Hidden::make('user_id')
                 ->default(auth()->id())
                 ])
@@ -140,44 +148,10 @@ class EquipmentResource extends Resource
                 TextColumn::make('buy_date')
                     ->label('Огноо')
                     ->sortable(),
-                BadgeColumn::make('status')
+                    Tables\Columns\BadgeColumn::make('status')
                     ->label('Статус')
                     ->sortable()
-                    ->formatStateUsing(function ($state, $record) {
-                    $register = $record->registers()->latest()->first();
-                    if ($register) {
-                    return match ($register->status) {
-                         1 => 'Бүртгэгдсэн',  
-                         2 => 'Тоологдсон',
-                         3 => 'Зарсагдсан', 
-                         4 => 'Эвдэрсэн',
-                         5 => 'Хугацаа дууссан', 
-                    default => 'Бүртгэгдсэн',
-            };
-        }
-                return 'Бүртгэгдсэн';
-    })
-                     ->colors([
-                      'success' => 1,
-                       'primary' => 2,
-                       'info' => 3, 
-                       'danger' => 4,
-                       'gray' => 5,
-    ])
-    ->color(function ($state, $record) {
-        $register = $record->registers()->latest()->first();
-        if ($register) {
-            return match ($register->status) {
-                1 => 'success',
-                2 => 'primary', 
-                3 => 'info',
-                4 => 'danger',
-                5 => 'gray',
-                default => 'success',
-            };
-        }
-        return 'success';
-    }),
+                    ->getStateUsing(fn($record) => config('status')[$record->status] ?? $record->status),
                 TextColumn::make('user.name')
                     ->label('Бүртгэгч')
                     ->sortable(),
@@ -227,7 +201,11 @@ class EquipmentResource extends Resource
                     ->schema([  
                     TextEntry::make('code')
                     ->label('Код')
-                    ->badge(),
+                    ->fontFamily(FontFamily::Mono),
+                    TextEntry::make('status')
+                    ->label('Статус')
+                    ->badge()
+                    ->getStateUsing(fn($record) => config('status')[$record->status] ?? $record->status),
                     TextEntry::make('category.name')
                     ->label('Төрөл'),
                     TextEntry::make('name')
@@ -271,16 +249,27 @@ class EquipmentResource extends Resource
                 ]),
     
                 infosection::make()
+                ->visible(function ($record) {
+                    if ($record->reason()->exists()) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                })
                 ->heading('Хасалт шалтгаан')
                 ->schema([
                     Grid::make(2)
                     ->schema([ 
-                        TextEntry::make('registers.reason')
+                        TextEntry::make('reason.reason')
+                        ->listWithLineBreaks()
                         ->label('Хасалт хийсэн шалтгаан'),
                         TextEntry::make('user.name')
+                        ->listWithLineBreaks()
                         ->badge()
                         ->label('Хасалт хийсэн ажилтан'),
-                        TextEntry::make('registers.created_at')
+                        TextEntry::make('created_at')
+                        ->listWithLineBreaks()
+
                         ->label('Тоо хэмжээ'),
                         ])
                 ])

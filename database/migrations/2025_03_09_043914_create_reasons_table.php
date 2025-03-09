@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('registers', function (Blueprint $table) {
+        Schema::create('reasons', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id');
-            $table->foreignId('equipment_id')->constrained(); 
-            $table->integer('status')->default(1)->nullable(); 
-            $table->date('register_date')->nullable(); 
-            $table->text('reason')->nullable(); 
+            $table->string('user_id')->nullable();
+            $table->text('reason')->nullable();
+            $table->string('equipment_id');  
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('registers');
+        Schema::dropIfExists('reasons');
     }
 };

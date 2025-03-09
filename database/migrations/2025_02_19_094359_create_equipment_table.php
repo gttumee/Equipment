@@ -21,8 +21,8 @@ return new class extends Migration
             $table->decimal('price', 10, 2)->nullable();  
             $table->date('buy_date')->nullable(); 
             $table->date('end_date')->nullable();
-            $table->integer('status')->default(1)->nullable(); 
-            $table->string('user_id');
+            $table->string('status')->nullable(); 
+            $table->string('user_id')->nullable();
             $table->decimal('percentage', 5, 2)->nullable(); 
             $table->timestamps();            
         });
