@@ -6,7 +6,7 @@ use App\Filament\Resources\EquipmentResource\Pages;
 use App\Models\Category;
 use App\Models\Equipment;
 use App\Models\Reason;
-use Dompdf\Css\Color;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -15,7 +15,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\BadgeColumn;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
@@ -27,7 +27,8 @@ use Filament\Support\Enums\Alignment;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Filament\Infolists\Components\Section as infosection;
 use Filament\Support\Enums\FontFamily;
-use Illuminate\Container\Attributes\DB;
+use Pest\Mutate\Mutators\Sets\DefaultSet;
+use pxlrbt\FilamentExcel\Columns\Column;
 
 class EquipmentResource extends Resource
 {
@@ -174,7 +175,44 @@ class EquipmentResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                 Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                ExportBulkAction::make()
+                ->label('Экспорт')
+                ->exports([
+                    ExcelExport::make('common')
+                    ->label('Үндсэн мэдээлэл')
+                    ->askForWriterType(
+                        label:'Файлын төрөл сонгох',
+                        default:'XLS'
+                    )
+                    ->withColumns([
+                        Column::make('code')->heading('Код'),
+                        Column::make('name')->heading('Нэр'),
+                        Column::make('category.name')->heading('Төрөлийн нэр'),
+                        Column::make('owner')->heading('Эзэмшигч'),
+                        Column::make('buy_date')->heading('Худалдаж авсан огноо'),
+                        Column::make('price')->heading('Үнэ'),
+                        Column::make('location')->heading('Байршил'),
+                        Column::make('relate.name')->heading('Дагалдах'),
+                        Column::make('reason.reason')->heading('Шалтгаан'),
+                        Column::make('status')->heading('Төлөв')                       
+                        ->getStateUsing(fn($record) => config('status')[$record->status] ?? $record->status),
+                        Column::make('user.name')->heading('Бүртгэсэн'),
+                        Column::make('created_at')->heading('Бүртгэсэн огноо'),
+                    ]),
+                    ExcelExport::make('relate')
+                    ->label('Дагалдах мэдээлэл')
+                    ->askForWriterType(
+                    label:'Файлын төрөл сонгох',
+                    default:'XLS'
+                    )
+                    ->withColumns([
+                        Column::make('code')->heading('Код'),
+                        Column::make('name')->heading('Нэр'),
+                        Column::make('relate.name')->heading('Дагалдах'),
+                        Column::make('relate.price')->heading('Дагалдах үнэ'),
+                    ])
+                ])
+            ]),
             ]);
     }
     
@@ -223,6 +261,13 @@ class EquipmentResource extends Resource
                 ]),
     
                 infosection::make()
+                ->visible(function ($record) {
+                    if ($record->relate()->exists()) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                })
                 ->heading('Дагалдах хэрэгсэлийн мэдээлэл')
                 ->schema([
                     Grid::make(5)
@@ -265,8 +310,7 @@ class EquipmentResource extends Resource
                         ->label('Хасалт хийсэн ажилтан'),
                         TextEntry::make('created_at')
                         ->listWithLineBreaks()
-
-                        ->label('Тоо хэмжээ'),
+                        ->label('Он сар өдөр'),
                         ])
                 ])
     
