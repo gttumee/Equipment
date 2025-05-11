@@ -27,13 +27,14 @@ use Filament\Support\Enums\Alignment;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Filament\Infolists\Components\Section as infosection;
 use Filament\Support\Enums\FontFamily;
-use Pest\Mutate\Mutators\Sets\DefaultSet;
+use Filament\Support\RawJs;
 use pxlrbt\FilamentExcel\Columns\Column;
+use Filament\Tables\Columns\Layout\Split;
+
 
 class EquipmentResource extends Resource
 {
     protected static ?string $model = Equipment::class;
-    protected static ?string $navigationGroup = 'Бүртгэл';
     protected static ?string $pluralModelLabel = 'Үндсэн хөрөнгө бүртгэх';
     protected static bool $hasTitleCaseModelLabel = false;
     protected static ?string $navigationLabel = 'Үндсэн хөрөнгө бүртгэх';
@@ -79,6 +80,9 @@ class EquipmentResource extends Resource
                 ->inputMode('decimal'),
             TextInput::make('price')
                 ->label('Үнэ')
+                ->numeric()
+                ->mask(RawJs::make('$money($input)'))
+                ->stripCharacters(',')
                 ->numeric()
                 ->inputMode('decimal'),
             TextInput::make('location')
@@ -129,16 +133,22 @@ class EquipmentResource extends Resource
             ->heading('Хөрөнгийн жагсаалт')
             ->paginated([5, 10, 20, 50, 100, 'all'])
             ->columns([
+                Split::make([
                 TextColumn::make('code')
                 ->label('Код')
-                ->sortable(),
+                ->sortable()
+                ->formatStateUsing(fn($state) => 'Код: ' . $state),
                 TextColumn::make('category.name')
                     ->label('Төрөл')
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn($state) => 'Төрөл: ' . $state),
                 TextColumn::make('name')
                     ->label('Нэр')
                     ->wrap()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn($state) => 'Нэр: ' . $state),
+                ]),
+                
                 TextColumn::make('owner')
                     ->label('Эзэмшигч')
                     ->sortable(),

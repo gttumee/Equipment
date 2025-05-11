@@ -20,8 +20,8 @@ use Filament\Tables\Table;
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
-    protected static ?string $navigationGroup = 'Бүртгэл';
-    protected static ?string $pluralModelLabel = 'Бүртэлийн төрөл нэмэх';
+    protected static ?string $modelLabel = 'Төрөл';
+    protected static ?string $recordTitleAttribute = 'name';
     protected static bool $hasTitleCaseModelLabel = false;
     protected static ?string $navigationLabel = 'Бүртэлийн төрөл нэмэх';
     protected static ?string $navigationIcon = 'heroicon-s-bars-arrow-up';

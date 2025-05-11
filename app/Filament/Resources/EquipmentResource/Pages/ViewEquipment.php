@@ -5,16 +5,11 @@ namespace App\Filament\Resources\EquipmentResource\Pages;
 use App\Filament\Resources\EquipmentResource;
 use App\Models\Equipment;
 use App\Models\Reason;
-use App\Models\Register;
 use Filament\Actions;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Support\Enums\Alignment;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ViewEquipment extends ViewRecord
 {

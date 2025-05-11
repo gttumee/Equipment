@@ -19,9 +19,8 @@ class ListEquipment extends ListRecords
             Actions\CreateAction::make()
             ->label('Шинээр бүртгэх'),
             Actions\Action::make('download_qr_codes')
-            ->label('QR кодыг PDF-аар татаж авах')
+            ->label('QR код хэвлэх')
             ->action(function () {
-                // PDFを生成するルートへリダイレクト
                 return redirect()->route('generate.qrcodes.pdf');
             })
         ];
