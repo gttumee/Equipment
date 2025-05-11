@@ -16,6 +16,6 @@ Route::get('/generate-qrcodes-pdf', [QrCodeController::class, 'generateQRCodesPD
 
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });

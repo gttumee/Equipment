@@ -29,7 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->maxContentWidth(MaxWidth::Full)
             ->id('admin')
-            ->path('admin')
+            ->path('')
             ->login()
             ->brandname('Үндсэн хөрөнгө бүртгэл')
             ->colors([
